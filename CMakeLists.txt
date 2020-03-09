@@ -28,11 +28,6 @@ string(APPEND CMAKE_CXX_FLAGS " -Wnon-virtual-dtor")
 hunter_add_package(GTest)
 find_package(GTest CONFIG REQUIRED)
 
-# TODO: change template word to project name and delete this comment
-add_library(matrix STATIC
-        # enum your files and delete this comment
-        ${CMAKE_CURRENT_SOURCE_DIR}/sources/matrix.cpp
-        )
 add_executable(tests
         # TODO: enum your files and delete this comment
         ${CMAKE_CURRENT_SOURCE_DIR}/tests/matrix_unittests.cpp
@@ -46,15 +41,12 @@ add_executable(main
 target_include_directories(main
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
         )
-target_include_directories(matrix
-        PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
-        )
 target_include_directories(tests
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
         )
 
 # TODO: change template word to project name and delete this comment
-target_link_libraries(tests GTest::main matrix)
+target_link_libraries(tests GTest::main)
 
 enable_testing()
 add_test(NAME unit_tests COMMAND tests)

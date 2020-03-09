@@ -5,15 +5,22 @@
 
 template<class T>
 class Matrix {
-    int rows{};
-    int columns{};
-    T** table;
+    int rows;
+    int columns;
+    T **table;
 
-    static bool check_dimensions(const Matrix<T>& op1, const Matrix<T>& op2) {
-        return op1.get_rows() == op2.get_rows() && op1.get_columns() == op2.get_columns();
+    static bool check_dimensions(const Matrix<T> &op1, const Matrix<T> &op2) {
+        return op1.get_rows() == op2.get_rows()
+               && op1.get_columns() == op2.get_columns();
     }
 
 public:
+    Matrix() {
+        this->rows = 0;
+        this->columns = 0;
+        this->table = nullptr;
+    }
+
     Matrix(int rows, int columns) {
         this->rows = rows;
         this->columns = columns;
@@ -28,8 +35,7 @@ public:
         }
     }
 
-
-    Matrix(const Matrix<T>& source) {
+    Matrix(const Matrix<T> &source) {
         this->rows = source.rows;
         this->columns = source.columns;
         table = new T *[rows];
@@ -43,11 +49,16 @@ public:
         }
     }
 
-    T*operator[](int i) const {
+    T *operator[](int i) const {
         return table[i];
     }
 
-    Matrix<T> operator=(const Matrix<T> &source) {
+    Matrix<T> &operator=(const Matrix<T> &source) {
+        for (int i = 0; i < this->rows; i++) {
+            delete[] table[i];
+        }
+        delete[] table;
+
         this->rows = source.rows;
         this->columns = source.columns;
         table = new T *[rows];
@@ -77,47 +88,57 @@ public:
         }
     }
 
-    friend bool operator!=(const Matrix<T>& op1, const Matrix<T>& op2) {
+    friend bool operator!=(const Matrix<T> &op1, const Matrix<T> &op2) {
         return !(op1 == op2);
     }
 
-    Matrix<T>& operator+(const Matrix<T>& other) {
-        if (check_dimensions(*this, other)) {
-            for (int i = 0; i < this->rows; i++) {
-                for (int j = 0; j < this->columns; j++) {
-                    this->table[i][j]+=other[i][j];
+    friend Matrix<T> operator+(const Matrix<T> &op1, const Matrix<T> &op2) {
+        Matrix<T> result;
+        if (check_dimensions(op1, op2)) {
+            result = Matrix(op1.rows, op1.columns);
+            for (int i = 0; i < op1.rows; i++) {
+                for (int j = 0; j < op1.columns; j++) {
+                    result.table[i][j] = op1.table[i][j] + op2.table[i][j];
                 }
             }
         } else {
-            rows = 0;
-            columns = 0;
-            table = nullptr;
+            result = Matrix();
         }
-        return *this;
+        return result;
     }
 
-    Matrix<T>& operator-(const Matrix<T>& other) {
-        if (check_dimensions(*this, other)) {
-            for (int i = 0; i < this->rows; i++) {
-                for (int j = 0; j < this->columns; j++) {
-                    this->table[i][j] -= other[i][j];
+    friend Matrix<T> operator-(const Matrix<T> &op1, const Matrix<T> &op2) {
+        Matrix<T> result;
+        if (check_dimensions(op1, op2)) {
+            result = Matrix(op1.rows, op1.columns);
+            for (int i = 0; i < op1.rows; i++) {
+                for (int j = 0; j < op1.columns; j++) {
+                    result.table[i][j] = op1.table[i][j] - op2.table[i][j];
                 }
             }
         } else {
-            rows = 0;
-            columns = 0;
-            table = nullptr;
+            result = Matrix();
         }
-        return *this;
+        return result;
     }
 
-    Matrix<T>& operator*(const Matrix<T>& other) {
-        for (int i = 0; i < this->rows; i++) {
-            for (int j = 0; j < this->columns; j++) {
-                this->table[i][j]*=other.table[i][j];
+    friend Matrix<T> operator*(const Matrix<T> &op1, const Matrix<T> &op2) {
+        Matrix<T> result;
+        if (op1.columns == op2.rows) {
+            result = Matrix(op1.rows, op2.columns);
+            for (int i = 0; i < result.rows; i++) {
+                for (int j = 0; j < result.columns; j++) {
+                    int sum = 0;
+                    for (int k = 0; k < result.columns; k++) {
+                        sum += op1.table[i][k] * op2.table[k][j];
+                    }
+                    result[i][j] = sum;
+                }
             }
+        } else {
+            result = Matrix();
         }
-        return *this;
+        return result;
     }
 
 
@@ -129,8 +150,11 @@ public:
         return columns;
     }
 
-    Matrix<T> invert() {
-        return *this;
+    ~Matrix() {
+        for (int i = 0; i < rows; i++) {
+            delete[] table[i];
+        }
+        delete[] table;
     }
 };
 
