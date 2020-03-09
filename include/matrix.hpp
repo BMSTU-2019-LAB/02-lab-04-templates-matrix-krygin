@@ -15,11 +15,7 @@ class Matrix {
     }
 
 public:
-    Matrix() {
-        this->rows = 0;
-        this->columns = 0;
-        this->table = nullptr;
-    }
+    Matrix();
 
     Matrix(int rows, int columns) {
         this->rows = rows;
