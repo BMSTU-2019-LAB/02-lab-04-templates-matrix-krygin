@@ -1,4 +1,4 @@
-// Copyright 2018 Your Name <your_email>
+// Copyright 2018 Ivan Krygin <krygin.ia@gmail.com>
 
 #include <iostream>
 #include <matrix.hpp>
